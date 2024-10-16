@@ -1,1 +1,1 @@
-web: gunicorn 'citiesbackend.wsgi'
+web: gunicorn citiesbackend.wsgi
