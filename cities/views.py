@@ -20,9 +20,9 @@ class AddCity(APIView):
     def post(self, request):
         input_serializer = CityInputSerializer(data=request.data)
         if input_serializer.is_valid():
-            city = input_serializer.save()
+            city_data = input_serializer.validated_data
             params = {
-                'q': city.name,
+                'q': city_data['name'],
                 'fields': 'items.point',
                 'key': settings.GIS_KEY,
             }
@@ -33,9 +33,11 @@ class AddCity(APIView):
                     if i.get("subtype", None) == "city":
                         lat = i['point']['lat']
                         lon = i['point']['lon']
-                        city.latitude = lat
-                        city.longitude = lon
-                        city.save()
+                        city = City.objects.create(
+                            name=city_data['name'],
+                            latitude=lat,
+                            longitude=lon
+                        )
                         output_serializer = CityOutputSerializer(city)
                         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
             return Response({"error": "Нет такого города"}, status=status.HTTP_400_BAD_REQUEST)
