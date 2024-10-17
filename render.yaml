@@ -1,16 +1,14 @@
 services:
   - type: web
     name: django-app
-    env: docker
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     buildCommand: ""
     startCommand: "gunicorn myproject.wsgi:application --bind 0.0.0.0:8000"
     envVars:
       - key: GIS_KEY
-        value: ''
+        value: ${GIS_KEY}
       - key: SECRET_KEY
-        sync: ''
-    healthCheckPath: "/"
+        value: ${SECRET_KEY}
     autoDeploy: true
-    postDeployCommand: "python manage.py migrate && python manage.py collectstatic --noinput"
